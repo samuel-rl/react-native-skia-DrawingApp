@@ -1,0 +1,12 @@
+import { useContext } from 'react';
+import { DrawContextType } from '../utils/types';
+
+import { DrawContext } from './useDrawProvider';
+
+export const useDrawContext = (): DrawContextType => {
+  const context = useContext(DrawContext);
+  if (context === null) {
+    throw Error('Ux Context missing');
+  }
+  return context!;
+};

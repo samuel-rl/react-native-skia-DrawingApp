@@ -1,21 +1,16 @@
-/* eslint-disable eol-last */
-/* eslint-disable @typescript-eslint/comma-dangle */
 /* eslint-disable no-plusplus */
-/* eslint-disable @typescript-eslint/quotes */
-/* eslint-disable arrow-body-style */
-/* eslint-disable default-case */
-import { processTransform2d } from "@shopify/react-native-skia";
-import type { IRect } from "@shopify/react-native-skia";
+import { processTransform2d } from '@shopify/react-native-skia';
+import type { IRect } from '@shopify/react-native-skia';
 
-import type { DrawingElements, ResizeMode } from "../types";
+import type { DrawingElements, ResizeMode } from '../types';
 
-import { getBoundingBox } from "./getBoundingBox";
+import { getBoundingBox } from './getBoundingBox';
 
 export const resizeElementsBy = (
   sx: number,
   sy: number,
   resizeMode: ResizeMode | undefined,
-  elements: DrawingElements
+  elements: DrawingElements,
 ) => {
   const source = getBoundingBox(elements);
   if (source === undefined) {
@@ -23,20 +18,23 @@ export const resizeElementsBy = (
   }
   let dest: IRect;
   switch (resizeMode) {
-    case "topLeft":
+    case 'topLeft':
       dest = resizeBounds(sx, sy, -sx, -sy, source);
       break;
-    case "topRight":
+    case 'topRight':
       dest = resizeBounds(0, sy, sx, -sy, source);
       break;
-    case "bottomLeft":
+    case 'bottomLeft':
       dest = resizeBounds(sx, 0, -sx, sy, source);
       break;
-    case "bottomRight":
+    case 'bottomRight':
       dest = resizeBounds(0, 0, sx, sy, source);
       break;
     case undefined:
       dest = resizeBounds(sx, sy, 0, 0, source);
+      break;
+    default:
+      return;
   }
 
   if (dest.width <= 0 || dest.height <= 0) {
@@ -53,6 +51,7 @@ export const resizeElementsBy = (
     { scaleX },
     { scaleY },
   ]);
+  // use to scale elements
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i];
     element.path.transform(matrix);
@@ -64,12 +63,10 @@ const resizeBounds = (
   y: number,
   r: number,
   b: number,
-  bounds: IRect
-) => {
-  return {
-    x: bounds.x + x,
-    y: bounds.y + y,
-    width: bounds.width + r,
-    height: bounds.height + b,
-  };
-};
+  bounds: IRect,
+) => ({
+  x: bounds.x + x,
+  y: bounds.y + y,
+  width: bounds.width + r,
+  height: bounds.height + b,
+});

@@ -39,7 +39,7 @@ export type DrawState = {
   elements: DrawingElements;
   selectedElements: DrawingElements;
   currentSelectionRect: IRect | undefined;
-  resizeMode: undefined;
+  resizeMode: ResizeMode | undefined;
   backgroundColor: number;
   pathType: PathType;
 };
@@ -51,6 +51,10 @@ export type DrawCommands = {
   addElement: (element: DrawingElement) => void;
   deleteAllElements: () => void;
   setPathType: (type: PathType) => void;
+  setSelectedElements: (...elements: DrawingElements) => void;
+  setSelectionRect: (selection: IRect | undefined) => void;
+  setResizeMode: (resizeMode: ResizeMode | undefined) => void;
+  cleanUseless: () => Promise<void>;
 };
 
 export type DrawContextType = {

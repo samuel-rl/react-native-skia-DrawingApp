@@ -67,7 +67,8 @@ function Toolbar({ innerRef, style }: ToolbarProps) {
     uxContext.commands.toggleMenu('selection');
   }, [uxContext.commands]);
 
-  const share = () => {
+  const share = async () => {
+    await drawContext.commands.cleanUseless();
     const image = innerRef.current?.makeImageSnapshot();
     if (image) {
       const data = image.encodeToBase64(ImageFormat.JPEG, 100);

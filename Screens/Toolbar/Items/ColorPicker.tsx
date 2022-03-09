@@ -91,17 +91,14 @@ function ColorPicker({ style }: ColorPickerProps) {
       setCurrentBackgroundColor(state.backgroundColor);
       setCurrentSize(state.size);
     });
+    const unsubscribeUx = uxContext.addListener((state) => {
+      setVisible(state.menu === 'colors');
+    });
     return () => {
       unsubscribeDraw();
+      unsubscribeUx();
     };
-  }, [drawContext.state]);
-
-  useEffect(
-    () => uxContext.addListener((state) => {
-      setVisible(state.menu === 'colors');
-    }),
-    [uxContext],
-  );
+  }, [drawContext.state, uxContext]);
 
   const onValueChange = (newValue: number | number[]) => {
     drawContext.commands.setSize(Array.isArray(newValue) ? newValue[0] : newValue);

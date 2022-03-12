@@ -1,4 +1,4 @@
-import { IImage, IPath, IRect } from '@shopify/react-native-skia';
+import { SkImage, SkPath, SkRect } from '@shopify/react-native-skia';
 
 export type DrawingElementType = 'path' | 'image';
 
@@ -6,10 +6,10 @@ export type PathType = 'normal' | 'dashed' | 'discreted';
 
 export type DrawingElement = {
   type: DrawingElementType;
-  path: IPath;
+  path: SkPath;
 } & (
-  | { type: 'path'; pathType: PathType; path: IPath; color: number; size: number; }
-  | { type: 'image'; path: IPath; image: IImage }
+  | { type: 'path'; pathType: PathType; path: SkPath; color: number; size: number; }
+  | { type: 'image'; path: SkPath; image: SkImage }
 );
 
 export type Menu = 'drawing' | 'chooseSticker' | 'selection' | 'colors';
@@ -19,10 +19,12 @@ export type ResizeMode = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 
 export type UxState = {
   menu: Menu | undefined;
+  modalVisible: boolean;
 };
 
 export type UxCommands = {
   toggleMenu: (menu: Menu | undefined) => void;
+  toggleModal: (visible: boolean) => void;
 };
 
 export type UxContextType = {
@@ -38,7 +40,7 @@ export type DrawState = {
   size: number;
   elements: DrawingElements;
   selectedElements: DrawingElements;
-  currentSelectionRect: IRect | undefined;
+  currentSelectionRect: SkRect | undefined;
   resizeMode: ResizeMode | undefined;
   backgroundColor: number;
   pathType: PathType;
@@ -49,10 +51,11 @@ export type DrawCommands = {
   setColor: (color: number) => void;
   setBackgroundColor: (color: number) => void;
   addElement: (element: DrawingElement) => void;
+  deleteSelectedElements: () => void;
   deleteAllElements: () => void;
   setPathType: (type: PathType) => void;
   setSelectedElements: (...elements: DrawingElements) => void;
-  setSelectionRect: (selection: IRect | undefined) => void;
+  setSelectionRect: (selection: SkRect | undefined) => void;
   setResizeMode: (resizeMode: ResizeMode | undefined) => void;
   cleanUseless: () => Promise<void>;
 };

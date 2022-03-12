@@ -14,6 +14,7 @@ const createStyle = (width: number, height: number) => StyleSheet.create({
   container: {
     width,
     height,
+    backgroundColor: '#fff',
   },
   message: {
     height: height / 2,

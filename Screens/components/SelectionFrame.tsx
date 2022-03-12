@@ -1,7 +1,6 @@
 /* eslint-disable react/function-component-definition */
 import React, { useRef } from 'react';
-import type { IRect } from '@shopify/react-native-skia';
-import { Group, Rect } from '@shopify/react-native-skia';
+import { Group, Rect, SkRect } from '@shopify/react-native-skia';
 
 import { SelectionResizeHandle } from './SelectionHandle';
 import { DrawingElements } from '../utils/types';
@@ -14,7 +13,7 @@ type Props = {
 const SelecctionHandleSize = 6;
 
 export const SelectionFrame: React.FC<Props> = ({ selectedElements }) => {
-  const boundingBoxRef = useRef<IRect | undefined>(undefined);
+  const boundingBoxRef = useRef<SkRect | undefined>(undefined);
   return selectedElements.length > 0 ? (
     <Group>
       {/** Rect around selected elements */}

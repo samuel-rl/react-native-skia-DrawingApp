@@ -5,7 +5,7 @@ import {
   Fill,
   Group,
   Image,
-  IRect,
+  SkRect,
   Paint,
   Path,
   Rect,
@@ -32,7 +32,7 @@ function Message({ innerRef, style }: MessageProps) {
   const [elements, setElements] = useState(drawContext.state.elements);
   const [backgroundColor, setBackgroundColor] = useState(drawContext.state.backgroundColor);
   const [selectedElements, setSelectedElements] = useState<DrawingElements>();
-  const [selectionRect, setSelectionRect] = useState<IRect>();
+  const [selectionRect, setSelectionRect] = useState<SkRect>();
 
   const touchHandler = useTouchDrawing();
 

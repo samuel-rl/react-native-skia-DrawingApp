@@ -55,8 +55,11 @@ function Toolbar({ innerRef, style }: ToolbarProps) {
   }, [uxContext.commands]);
 
   const handleDelete = useCallback(() => {
-    uxContext.commands.toggleMenu(undefined);
-    drawContext.commands.deleteAllElements();
+    if (drawContext.state.selectedElements.length === 0) {
+      uxContext.commands.toggleModal(true);
+    } else {
+      drawContext.commands.deleteSelectedElements();
+    }
   }, [drawContext.commands, uxContext.commands]);
 
   const handleColorPressed = useCallback(() => {

@@ -1,6 +1,6 @@
 /* eslint-disable no-plusplus */
 import { processTransform2d } from '@shopify/react-native-skia';
-import type { IRect } from '@shopify/react-native-skia';
+import type { SkRect } from '@shopify/react-native-skia';
 
 import type { DrawingElements, ResizeMode } from '../types';
 
@@ -16,7 +16,7 @@ export const resizeElementsBy = (
   if (source === undefined) {
     return;
   }
-  let dest: IRect;
+  let dest: SkRect;
   switch (resizeMode) {
     case 'topLeft':
       dest = resizeBounds(sx, sy, -sx, -sy, source);
@@ -63,7 +63,7 @@ const resizeBounds = (
   y: number,
   r: number,
   b: number,
-  bounds: IRect,
+  bounds: SkRect,
 ) => ({
   x: bounds.x + x,
   y: bounds.y + y,

@@ -1,12 +1,12 @@
 /* eslint-disable no-plusplus */
-import type { IPoint } from '@shopify/react-native-skia';
+import type { SkPoint } from '@shopify/react-native-skia';
 
 import type { DrawingElements } from '../types';
 
 import { getBounds } from './getBounds';
 
 export const findClosestElementToPoint = (
-  point: IPoint,
+  point: SkPoint,
   elements: DrawingElements,
 ) => {
   // Empty elements returns undefined

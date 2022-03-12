@@ -1,16 +1,25 @@
 import {
+  Canvas,
+  canvas2Polar,
+  Circle,
+  Group,
+  Paint,
+  polar2Canvas,
+  Shader,
+  ShaderLib,
   Skia,
+  useTouchHandler,
+  useValue,
+  vec,
 } from '@shopify/react-native-skia';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Image,
-  ScrollView, StyleSheet, TouchableOpacity, View, ViewStyle,
+  StyleSheet, View, ViewStyle,
 } from 'react-native';
 import { Slider } from '@miblanchard/react-native-slider';
-import { CHECK } from '../../../assets';
 import { useDrawContext } from '../../Hooks/useDrawContext';
 import { useUxContext } from '../../Hooks/useUxContext';
-import { toColor } from '../../utils/functions/toColor';
+import { polar2Color } from '../../utils/functions/helpers';
 
 const COLOR_SIZE = {
   width: 30,
@@ -18,66 +27,39 @@ const COLOR_SIZE = {
   margin: 10,
 };
 
-const colors = [
-  '#000000',
-  '#FF0000',
-  '#FF69B4',
-  '#FFA500',
-  '#FFFF00',
-  '#008000',
-  '#0000FF',
-  '#A52A2A',
-  '#FFFFFF',
-];
+const PICKER_VALUES = {
+  max: 20,
+  min: 1,
+  margin: 1,
+};
+
+const PICKER_SIZE = {
+  size: 200,
+  margin: (PICKER_VALUES.max * 0.5) + 5 + PICKER_VALUES.margin * 4,
+};
+
+const TOTAL_PICKER_SIZE = PICKER_SIZE.size + PICKER_SIZE.margin * 2;
+
+const source = Skia.RuntimeEffect.Make(`
+uniform float2 c;
+uniform float r;
+${ShaderLib.Math}
+${ShaderLib.Colors}
+half4 main(vec2 uv) { 
+  float mag = distance(uv, c);
+  float theta = normalizeRad(canvas2Polar(uv, c).x);
+  return hsv2rgb(vec3(theta/TAU, mag/r, 1.0));
+}`)!;
 
 interface ColorPickerProps {
   style: ViewStyle;
 }
 
-interface ColorComponentProps {
-  color: string,
-  onPress: (color: number) => void;
-  isSelected: boolean;
-  rounded: boolean;
-}
-
-function ColorComponent({
-  color, onPress, isSelected, rounded,
-}: ColorComponentProps) {
-  return (
-    <TouchableOpacity
-      onPress={() => onPress(Skia.Color(color))}
-      style={{
-        backgroundColor: color,
-        width: COLOR_SIZE.width,
-        height: COLOR_SIZE.height,
-        borderRadius: rounded ? COLOR_SIZE.width / 2 : 5,
-        marginHorizontal: COLOR_SIZE.margin,
-        borderWidth: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-      hitSlop={{
-        top: 10, bottom: 10, left: 10, right: 10,
-      }}
-    >
-      {isSelected && (
-        <Image
-          source={CHECK}
-          style={{
-            width: COLOR_SIZE.width / 1.2,
-            height: COLOR_SIZE.height / 1.2,
-            tintColor: color === '#000000' ? '#fff' : '#000',
-          }}
-        />
-      )}
-    </TouchableOpacity>
-  );
-}
-
 function ColorPicker({ style }: ColorPickerProps) {
   const uxContext = useUxContext();
   const drawContext = useDrawContext();
+  const translateX = useValue(100);
+  const translateY = useValue(100);
   const [currentColor, setCurrentColor] = useState(drawContext.state.color);
   const [currentBackgroundColor, setCurrentBackgroundColor] = useState(
     drawContext.state.backgroundColor,
@@ -104,6 +86,23 @@ function ColorPicker({ style }: ColorPickerProps) {
     drawContext.commands.setSize(Array.isArray(newValue) ? newValue[0] : newValue);
   };
 
+  const temp = useMemo(() => PICKER_SIZE.size / 2 + PICKER_SIZE.margin, []);
+  const center = useMemo(() => vec(temp, temp), []);
+  const r = useMemo(() => PICKER_SIZE.size / 2, []);
+
+  const colorWheelTouchHandler = useTouchHandler({
+    onActive: (pt) => {
+      const { theta, radius } = canvas2Polar(pt, center);
+      const { x, y } = polar2Canvas(
+        { theta, radius: Math.min(radius, r) },
+        center,
+      );
+      translateX.current = x;
+      translateY.current = y;
+      drawContext.commands.setColor(polar2Color(theta, Math.min(radius, r), r));
+    },
+  });
+
   return visible ? (
     <View style={[style, styles.container]}>
       <View style={{
@@ -114,46 +113,39 @@ function ColorPicker({ style }: ColorPickerProps) {
       >
         <Slider
           value={currentSize}
-          minimumValue={1}
-          maximumValue={20}
+          minimumValue={PICKER_VALUES.min}
+          maximumValue={PICKER_VALUES.max}
           step={1}
           onValueChange={onValueChange}
         />
       </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          marginVertical: COLOR_SIZE.margin,
-        }}
+      <View style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+
+      }}
       >
-        {colors.slice(0, -1).map((color) => (
-          <ColorComponent
-            isSelected={toColor(currentBackgroundColor, false) === color}
-            key={color}
-            color={color.toString()}
-            onPress={drawContext.commands.setBackgroundColor}
-            rounded
+        <Canvas style={styles.colorWheel} onTouch={colorWheelTouchHandler}>
+          <Paint>
+            <Shader source={source} uniforms={{ c: center, r }} />
+          </Paint>
+          <Circle cx={center.x} cy={center.y} r={r} />
+          <Group style="stroke" strokeWidth={5}>
+            <Circle
+              r={(currentSize * 0.5) + 5}
+              color={currentBackgroundColor}
+              cx={translateX}
+              cy={translateY}
+            />
+          </Group>
+          <Circle
+            r={(currentSize * 0.5) + 5}
+            color={currentColor}
+            cx={translateX}
+            cy={translateY}
           />
-        ))}
-      </ScrollView>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          marginVertical: COLOR_SIZE.margin,
-        }}
-      >
-        {colors.map((color) => (
-          <ColorComponent
-            isSelected={toColor(currentColor, false) === color}
-            key={color}
-            color={color.toString()}
-            onPress={drawContext.commands.setColor}
-            rounded={false}
-          />
-        ))}
-      </ScrollView>
+        </Canvas>
+      </View>
     </View>
   ) : null;
 }
@@ -170,6 +162,10 @@ export const styles = StyleSheet.create({
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 5 },
     elevation: 4,
+  },
+  colorWheel: {
+    width: TOTAL_PICKER_SIZE,
+    height: TOTAL_PICKER_SIZE,
   },
 });
 

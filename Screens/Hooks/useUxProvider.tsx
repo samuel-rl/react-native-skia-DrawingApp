@@ -10,6 +10,7 @@ export const UxContext = React.createContext<UxContextType | undefined>(
 const createUxProviderValue = (): UxContextType => {
   const state: UxState = {
     menu: undefined,
+    modalVisible: false,
   };
 
   const listeners = [] as ((state: UxState) => void)[];
@@ -18,6 +19,10 @@ const createUxProviderValue = (): UxContextType => {
   const commands = {
     toggleMenu: (menu: Menu | undefined) => {
       state.menu = state.menu === menu ? undefined : menu;
+      notifyListeners(state);
+    },
+    toggleModal: (visible: boolean) => {
+      state.modalVisible = visible;
       notifyListeners(state);
     },
   };

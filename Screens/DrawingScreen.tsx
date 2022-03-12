@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { StyleSheet, useWindowDimensions, SafeAreaView } from 'react-native';
 import Message from './components/Message';
+import ModalConfirm from './components/ModalConfirm';
 import { useDrawProvider } from './Hooks/useDrawProvider';
 import { useUxProvider } from './Hooks/useUxProvider';
 import ColorPicker from './Toolbar/Items/ColorPicker';
@@ -48,6 +49,7 @@ function DrawingScreen() {
           <DrawPicker style={styles.secondsTools} />
           <ColorPicker style={styles.secondsTools} />
           <StickerPicker style={styles.secondsTools} />
+          <ModalConfirm />
         </DrawProvider>
       </UxProvider>
     </SafeAreaView>

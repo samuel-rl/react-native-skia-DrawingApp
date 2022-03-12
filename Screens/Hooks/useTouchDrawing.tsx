@@ -1,7 +1,7 @@
 /* eslint-disable no-lonely-if */
 import { useRef } from 'react';
 import { useTouchHandler } from '@shopify/react-native-skia';
-import type { IPoint } from '@shopify/react-native-skia';
+import type { SkPoint } from '@shopify/react-native-skia';
 
 import { useDrawContext } from './useDrawContext';
 import { useUxContext } from './useUxContext';
@@ -14,13 +14,14 @@ import { resizeElementsBy } from '../utils/functions/resizeElements';
 import { findElementsInRect } from '../utils/functions/findElementsInRect';
 
 export const useTouchDrawing = () => {
-  const prevPointRef = useRef<IPoint>();
+  const prevPointRef = useRef<SkPoint>();
   const drawContext = useDrawContext();
   const uxContext = useUxContext();
 
   return useTouchHandler({
     onStart: ({ x, y }) => {
       switch (uxContext.state.menu) {
+        case undefined:
         case 'drawing':
         case 'chooseSticker':
         case 'colors': {
@@ -28,7 +29,6 @@ export const useTouchDrawing = () => {
           drawContext.commands.addElement(createPath(x, y, color, size, pathType));
           break;
         }
-        case undefined:
         case 'selection': {
           const el = findClosestElementToPoint(
             { x, y },
@@ -69,6 +69,7 @@ export const useTouchDrawing = () => {
     },
     onActive: ({ x, y }) => {
       switch (uxContext.state.menu) {
+        case undefined:
         case 'drawing':
         case 'chooseSticker':
         case 'colors': {
@@ -83,7 +84,6 @@ export const useTouchDrawing = () => {
           );
           break;
         }
-        case undefined:
         case 'selection': {
           if (drawContext.state.selectedElements.length > 0) {
             resizeElementsBy(
@@ -111,7 +111,6 @@ export const useTouchDrawing = () => {
     },
     onEnd: () => {
       switch (uxContext.state.menu) {
-        case undefined:
         case 'selection': {
           if (drawContext.state.currentSelectionRect) {
             const elements = findElementsInRect(

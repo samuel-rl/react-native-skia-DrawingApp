@@ -1,5 +1,5 @@
 /* eslint-disable no-return-assign */
-import { IRect, Skia } from '@shopify/react-native-skia';
+import { SkRect, Skia } from '@shopify/react-native-skia';
 import React, { useMemo } from 'react';
 import {
   DrawContextType, DrawingElement, DrawingElements, DrawState, PathType, ResizeMode,
@@ -55,10 +55,15 @@ const createDrawProviderValue = (): DrawContextType => {
       state.elements.push(element);
       notifyListeners(state);
     },
-    deleteAllElements: () => {
+    deleteSelectedElements: () => {
       state.elements = state.elements.filter(
         (el) => !state.selectedElements.includes(el),
       );
+      state.selectedElements = [];
+      notifyListeners(state);
+    },
+    deleteAllElements: () => {
+      state.elements = [];
       state.selectedElements = [];
       notifyListeners(state);
     },
@@ -66,7 +71,7 @@ const createDrawProviderValue = (): DrawContextType => {
       state.selectedElements = elements;
       notifyListeners(state);
     },
-    setSelectionRect: (rect: IRect | undefined) => {
+    setSelectionRect: (rect: SkRect | undefined) => {
       state.currentSelectionRect = rect;
       notifyListeners(state);
     },

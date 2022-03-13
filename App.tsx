@@ -1,8 +1,8 @@
 import React from 'react';
 import DrawingScreen from './Screens/DrawingScreen';
 
-const App = () => {
+function App() {
   return <DrawingScreen />;
-};
+}
 
 export default App;

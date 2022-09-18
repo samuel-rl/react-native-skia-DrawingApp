@@ -12,9 +12,10 @@
   "dependencies": {
     "@miblanchard/react-native-slider": "^2.1.0",
     "@react-native-community/slider": "^4.2.0",
-    "@shopify/react-native-skia": "https://github.com/Shopify/react-native-skia/releases/download/v0.1.105-alpha/shopify-react-native-skia-0.1.105.tgz",
+    "@shopify/react-native-skia": "https://github.com/Shopify/react-native-skia/releases/download/v0.1.107-alpha/shopify-react-native-skia-0.1.107.tgz",
     "react": "17.0.2",
-    "react-native": "0.67.3"
+    "react-native": "0.67.3",
+    "react-native-share": "^7.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

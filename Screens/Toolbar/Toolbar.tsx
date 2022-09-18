@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ImageFormat, SkiaView } from '@shopify/react-native-skia';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Alert, Share, StyleSheet, View, ViewStyle,
+  StyleSheet, View, ViewStyle,
 } from 'react-native';
+import Share from 'react-native-share';
 import DrawTool from './Items/DrawTool';
 import ColorsTool from './Items/ColorsTool';
 import SelectionTool from './Items/SelectionTool';
@@ -76,16 +76,13 @@ function Toolbar({ innerRef, style }: ToolbarProps) {
     if (image) {
       const data = image.encodeToBase64(ImageFormat.JPEG, 100);
       const url = `data:image/png;base64,${data}`;
-      Share.share({
+      const shareOptions = {
+        title: 'Sharing image from awesome drawing app',
+        message: 'My drawing',
         url,
-        title: 'Drawing',
-      }).catch(() => {
-        Alert.alert('An error occurred when sharing the image.');
-      });
-    } else {
-      Alert.alert(
-        'An error occurred when creating a snapshot of your drawing.',
-      );
+        failOnCancel: false,
+      };
+      await Share.open(shareOptions);
     }
   };
 
